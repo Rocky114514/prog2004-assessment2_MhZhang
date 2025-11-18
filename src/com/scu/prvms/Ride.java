@@ -1,104 +1,94 @@
 package com.scu.prvms;
 
-// --- 新增的导入 ---
-import java.util.Queue;
-import java.util.LinkedList;
-// ---
+import java.util.*; // 使用通配符导入，包含了Queue, List, LinkedList, Iterator, Collections
 
 public class Ride implements RideInterface {
 
     private String rideName;
     private String rideType;
     private Employee rideOperator;
-
-    // --- 新增的实例变量 ---
     private Queue<Visitor> waitingLine;
-    // ---
+    private List<Visitor> rideHistory; // Part 4A 的内容
 
-    // 默认构造函数
-    public Ride() {
-        // --- 在构造函数中进行初始化 ---
-        this.waitingLine = new LinkedList<>();
-    }
-
-    // 参数化构造函数
     public Ride(String rideName, String rideType) {
         this.rideName = rideName;
         this.rideType = rideType;
         this.rideOperator = null;
-        // --- 在构造函数中进行初始化 ---
-        this.waitingLine = new LinkedList<>();
+        this.waitingLine = new LinkedList<>(); // Part 3 的内容
+        this.rideHistory = new LinkedList<>(); // Part 4A 的内容
     }
 
-    // --- Getters 和 Setters (保持不变) ---
+    // --- Part 4B: 新增的排序方法 ---
+    /**
+     * 对 rideHistory 列表使用 VisitorComparator进行排序。
+     */
+    public void sortRideHistory() {
+        if (rideHistory == null || rideHistory.isEmpty()) {
+            System.out.println("Ride history is empty, nothing to sort.");
+            return;
+        }
+        // 使用 Collections.sort() 和我们自定义的 Comparator
+        Collections.sort(rideHistory, new VisitorComparator());
+        System.out.println("SUCCESS: Ride history has been sorted by age, then by name.");
+    }
+    // ---
+
+    // Getters 和 Setters ...
     public String getRideName() { return rideName; }
     public void setRideName(String rideName) { this.rideName = rideName; }
-    public String getRideType() { return rideType; }
-    public void setRideType(String rideType) { this.rideType = rideType; }
     public Employee getRideOperator() { return rideOperator; }
     public void assignOperator(Employee operator) { this.rideOperator = operator; }
 
 
-    // --- 第三部分：实现的三个核心方法 ---
-
+    // --- Part 3 的已实现方法 ---
     @Override
     public void addVisitorToQueue(Visitor visitor) {
-        waitingLine.add(visitor); // 使用add方法将游客添加到队尾
+        waitingLine.add(visitor);
         System.out.println("SUCCESS: " + visitor.getName() + " has joined the queue for " + this.getRideName() + ".");
     }
-
     @Override
     public void removeVisitorFromQueue() {
-        // 先检查队列是否为空，这是健壮的代码
-        if (waitingLine.isEmpty()) {
-            System.out.println("FAILURE: The queue is empty. No visitor to remove.");
-            return;
-        }
-        // poll方法会移除并返回队首的元素，如果队列为空则返回null
+        if (waitingLine.isEmpty()) { System.out.println("FAILURE: The queue is empty."); return; }
         Visitor removedVisitor = waitingLine.poll();
         System.out.println("SUCCESS: " + removedVisitor.getName() + " has been removed from the queue.");
     }
-
     @Override
     public void printQueue() {
-        System.out.println("\n--- Current Waiting Line for '" + this.getRideName() + "' ---");
-        if (waitingLine.isEmpty()) {
-            System.out.println("The queue is currently empty.");
-        } else {
-            int position = 1;
-            // 使用增强for循环遍历队列并打印
-            for (Visitor visitor : waitingLine) {
-                System.out.println(position + ". " + visitor.getName() + " (Ticket: " + visitor.getTicketId() + ")");
-                position++;
-            }
-        }
-        System.out.println("-------------------------------------------------\n");
+        System.out.println("\n--- Queue for '" + this.getRideName() + "' ---");
+        if (waitingLine.isEmpty()) { System.out.println("Empty."); }
+        else { int pos = 1; for (Visitor v : waitingLine) { System.out.println(pos++ + ". " + v.getName()); } }
+        System.out.println("---------------------------\n");
     }
 
-    // --- 其他来自接口的方法暂时还是空的 ---
-
+    // --- Part 4A 的已实现方法 ---
     @Override
     public void addVisitorToHistory(Visitor visitor) {
-        // Part 4 中实现
+        rideHistory.add(visitor);
+        System.out.println("INFO: " + visitor.getName() + " was added to the ride history.");
     }
-
     @Override
     public boolean checkVisitorFromHistory(Visitor visitor) {
-        // Part 4 中实现
-        return false;
+        return rideHistory.contains(visitor);
     }
-
     @Override
     public int numberOfVisitors() {
-        // Part 4 中实现
-        return 0;
+        return rideHistory.size();
     }
-
     @Override
     public void printRideHistory() {
-        // Part 4 中实现
+        System.out.println("\n--- Ride History for '" + this.getRideName() + "' ---");
+        if (rideHistory.isEmpty()) { System.out.println("Empty."); }
+        else {
+            Iterator<Visitor> iterator = rideHistory.iterator();
+            while (iterator.hasNext()) {
+                Visitor v = iterator.next();
+                System.out.println("- " + v.getName() + " (Age: " + v.getAge() + ")");
+            }
+        }
+        System.out.println("----------------------------------\n");
     }
 
+    // --- 待实现的方法 ---
     @Override
     public void runOneCycle() {
         // Part 5 中实现
