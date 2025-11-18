@@ -1,6 +1,6 @@
 package com.scu.prvms;
 
-public class Ride {
+public class Ride implements RideInterface {
     private String rideName;
     private Employee rideOperator; // 关键变量
     private boolean isOpen;
@@ -13,5 +13,45 @@ public class Ride {
         this.rideOperator = operator;
         this.isOpen = (operator != null); // 如果有操作员，就认为是开放的
         System.out.println(operator.getName() + " is now operating " + this.rideName);
+    }
+
+    @Override
+    public void addVisitorToQueue(Visitor visitor) {
+
+    }
+
+    @Override
+    public void removeVisitorFromQueue() {
+
+    }
+
+    @Override
+    public void printQueue() {
+
+    }
+
+    @Override
+    public void addVisitorToHistory(Visitor visitor) {
+
+    }
+
+    @Override
+    public boolean checkVisitorFromHistory(Visitor visitor) {
+        return false;
+    }
+
+    @Override
+    public int numberOfVisitors() {
+        return 0;
+    }
+
+    @Override
+    public void printRideHistory() {
+
+    }
+
+    @Override
+    public void runOneCycle() {
+
     }
 }

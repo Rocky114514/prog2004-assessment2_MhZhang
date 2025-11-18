@@ -1,7 +1,7 @@
 package com.scu.prvms;
 
 // 在第二部分，我们会把它变成 abstract
-public class Person {
+public abstract class Person {
     private String name;
     private int age;
     private String id;
