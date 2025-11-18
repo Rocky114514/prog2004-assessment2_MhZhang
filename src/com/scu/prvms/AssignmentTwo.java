@@ -7,47 +7,62 @@ public class AssignmentTwo {
 
         // assignment.partThree();
         // assignment.partFourA();
-        // --- 调用partFourB()来运行本次的演示 ---
-        assignment.partFourB();
+        // assignment.partFourB();
+
+        // --- 调用partFive()来运行本次的演示 ---
+        assignment.partFive();
     }
 
-    // Part 3 的演示代码 (已完成)
-    public void partThree() { /* ... */ }
+    public void partThree() {
+        // Part 3 的演示代码... (为简洁省略)
+    }
 
-    // Part 4A 的演示代码 (已完成)
-    public void partFourA() { /* ... */ }
+    public void partFourA() {
+        // Part 4A 的演示代码... (为简洁省略)
+    }
 
-    // --- Part 4B：在partFourB()中编写演示代码 ---
     public void partFourB() {
-        System.out.println("--- Executing Part 4B: Sorting Ride History Demonstration ---");
+        // Part 4B 的演示代码... (为简洁省略)
+    }
 
-        // 1. 创建一个 Ride 对象
-        Ride pirateShip = new Ride("The Galleon", "Swing Ride");
+    // --- Part 5：在partFive()中编写演示代码 ---
+    public void partFive() {
+        System.out.println("--- Executing Part 5: Run a Ride Cycle Demonstration ---");
 
-        // 2. 添加一些乱序的游客到历史记录中
-        // 注意：Zane 和 Alex 年龄相同，用于测试次要排序规则（按姓名）
-        pirateShip.addVisitorToHistory(new Visitor("Zane", 22, "ID010", "T10", "Day Pass"));
-        pirateShip.addVisitorToHistory(new Visitor("Yara", 35, "ID009", "T09", "Day Pass"));
-        pirateShip.addVisitorToHistory(new Visitor("Alex", 22, "ID008", "T08", "Day Pass"));
-        pirateShip.addVisitorToHistory(new Visitor("Bob", 19, "ID011", "T11", "Day Pass"));
+        // 1. 创建一个 Ride 对象，设置每轮最大载客量为 4
+        Ride hauntedMansion = new Ride("Haunted Mansion", "Dark Ride", 4);
+        System.out.println("Created a new ride: '" + hauntedMansion.getRideName() + "' with a capacity of 4 riders per cycle.");
 
-        // 3. 打印排序前的列表
-        System.out.println("\n--- Unsorted Ride History: ---");
-        pirateShip.printRideHistory();
+        // 2. 必须为游乐设施分配一个操作员
+        Employee operator = new Employee("Henry", 40, "E101", "EMP101", "Ride Operator");
+        hauntedMansion.assignOperator(operator);
+        System.out.println("Assigned operator '" + operator.getName() + "' to the ride.");
 
-        // 4. 调用新的排序方法
-        pirateShip.sortRideHistory();
+        // 3. 添加超过一轮容量的游客到队列中 (例如，添加10名)
+        System.out.println("\nAdding 10 visitors to the queue...");
+        for (int i = 1; i <= 10; i++) {
+            hauntedMansion.addVisitorToQueue(new Visitor("Visitor" + i, 20 + i, "ID_V" + i, "T_V" + i, "Day Pass"));
+        }
 
-        // 5. 再次打印列表，以验证排序结果
-        // 预期顺序: Bob(19), Alex(22), Zane(22), Yara(35)
-        System.out.println("\n--- Sorted Ride History: ---");
-        pirateShip.printRideHistory();
+        // 4. 打印运行前的状态
+        System.out.println("\n--- STATUS BEFORE RUNNING CYCLE ---");
+        hauntedMansion.printQueue();
+        hauntedMansion.printRideHistory();
 
-        System.out.println("\n--- Part 4B Demonstration Finished ---");
+        // 5. 运行一轮
+        hauntedMansion.runOneCycle();
+
+        // 6. 打印运行后的状态，以验证变化
+        System.out.println("\n--- STATUS AFTER RUNNING CYCLE ---");
+        System.out.println("Queue should now have 6 visitors (10 - 4).");
+        hauntedMansion.printQueue();
+        System.out.println("Ride history should now have 4 visitors.");
+        hauntedMansion.printRideHistory();
+
+        System.out.println("\n--- Part 5 Demonstration Finished ---");
     }
     // ---
 
-    public void partFive() {}
     public void partSix() {}
     public void partSeven() {}
 }
