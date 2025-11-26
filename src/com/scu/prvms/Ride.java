@@ -1,5 +1,13 @@
 package com.scu.prvms;
 
+// ---  新增的导入 ---
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+// ---
+
 import java.util.*;
 
 public class Ride implements RideInterface {
@@ -9,102 +17,92 @@ public class Ride implements RideInterface {
     private Employee rideOperator;
     private Queue<Visitor> waitingLine;
     private List<Visitor> rideHistory;
+    private int maxRider;
+    private int numOfCycles;
 
-    // --- Part 5: 新增的实例变量 ---
-    private int maxRider;       // 每轮最大载客量
-    private int numOfCycles;    // 已运行的总轮数
-    // ---
-
-    // --- Part 5: 修改了构造函数以接收 maxRider ---
     public Ride(String rideName, String rideType, int maxRider) {
         this.rideName = rideName;
         this.rideType = rideType;
         this.rideOperator = null;
         this.waitingLine = new LinkedList<>();
         this.rideHistory = new LinkedList<>();
-
-        // 初始化 Part 5 的新变量
         this.maxRider = maxRider;
         this.numOfCycles = 0;
     }
-    // ---
 
-    // Part 4B 的排序方法 (保持不变)
-    public void sortRideHistory() {
-        if (rideHistory == null || rideHistory.isEmpty()) {
-            System.out.println("Ride history is empty, nothing to sort.");
-            return;
+    // ---  新增的文件导出方法 ---
+    /**
+     * 将 rideHistory 中的所有游客数据导出到一个 CSV 文件中。
+     * @param filename 要创建的文件的名称 (例如 "ride_history.csv")。
+     */
+    public void exportRideHistory(String filename) {
+        System.out.println("\nAttempting to export ride history to '" + filename + "'...");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            if (rideHistory.isEmpty()) {
+                System.out.println("INFO: Ride history is empty. An empty file will be created.");
+            }
+            for (Visitor visitor : rideHistory) {
+                // 定义CSV格式: id,name,age,ticketId,passType
+                String line = String.join(",",
+                        visitor.getId(),
+                        visitor.getName(),
+                        String.valueOf(visitor.getAge()),
+                        visitor.getTicketId(),
+                        visitor.getPassType());
+                writer.write(line);
+                writer.newLine();
+            }
+            System.out.println("SUCCESS: Ride history has been successfully exported to " + filename);
+        } catch (IOException e) {
+            System.err.println("FAILURE: An error occurred while writing to the file: " + e.getMessage());
         }
-        Collections.sort(rideHistory, new VisitorComparator());
-        System.out.println("SUCCESS: Ride history has been sorted by age, then by name.");
     }
 
-    // Getters 和 Setters (保持不变)
+    //  新增的文件导入方法 ---
+    public void importRideHistory(String filename) {
+        System.out.println("\nAttempting to import ride history from '" + filename + "'...");
+        rideHistory.clear(); // 在导入前先清空当前的历史记录，防止重复
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                // 数据验证：确保每一行都有5个部分
+                if (parts.length == 5) {
+                    try {
+                        String id = parts[0];
+                        String name = parts[1];
+                        int age = Integer.parseInt(parts[2].trim()); // trim() 移除可能的空格
+                        String ticketId = parts[3];
+                        String passType = parts[4];
+
+                        Visitor visitor = new Visitor(name, age, id, ticketId, passType);
+                        this.addVisitorToHistory(visitor); // 使用已有的方法添加，可以复用打印信息
+                    } catch (NumberFormatException e) {
+                        System.err.println("SKIPPING LINE: Could not parse age in line: " + line);
+                    }
+                } else {
+                    System.err.println("SKIPPING LINE: Malformed data in line: " + line);
+                }
+            }
+            System.out.println("SUCCESS: Ride history has been successfully imported from " + filename);
+        } catch (IOException e) {
+            System.err.println("FAILURE: An error occurred while reading the file: " + e.getMessage());
+        }
+    }
+    // ---
+
+
+    public void sortRideHistory() { /* ... */ }
+
+    // Getters 和 Setters
     public String getRideName() { return rideName; }
-    public void setRideName(String rideName) { this.rideName = rideName; }
-    public Employee getRideOperator() { return rideOperator; }
     public void assignOperator(Employee operator) { this.rideOperator = operator; }
 
 
-    // --- Part 5: 实现 runOneCycle 方法 ---
-
-    @Override
-    public void runOneCycle() {
-        System.out.println("\nAttempting to run a cycle for '" + this.getRideName() + "'...");
-
-        // 1. 前置检查 (健壮性)
-        if (this.rideOperator == null) {
-            System.out.println("FAILURE: Cannot run cycle. No operator is assigned to the ride!");
-            return;
-        }
-        if (this.waitingLine.isEmpty()) {
-            System.out.println("FAILURE: Cannot run cycle. The waiting line is empty.");
-            return;
-        }
-
-        // 2. 核心逻辑：计算本轮可乘坐的游客数量
-        int ridersThisCycle = Math.min(this.maxRider, this.waitingLine.size());
-        System.out.println("INFO: Cycle is starting! Moving " + ridersThisCycle + " visitors from the queue to the ride.");
-
-        // 3. 移动游客：从队列移除，添加到历史记录
-        for (int i = 0; i < ridersThisCycle; i++) {
-            Visitor visitor = waitingLine.poll(); // 从队首移除
-            if (visitor != null) {
-                this.addVisitorToHistory(visitor); // 添加到历史 (这个方法会打印自己的消息)
-            }
-        }
-
-        // 4. 更新运行轮数
-        this.numOfCycles++;
-        System.out.println("SUCCESS: Cycle finished. Total cycles run for this ride: " + this.numOfCycles);
-    }
-    // ---
-
-
-    // --- Part 3 & 4A 的已实现方法 (保持不变) ---
-    @Override
-    public void addVisitorToQueue(Visitor visitor) {
-        waitingLine.add(visitor);
-        System.out.println("SUCCESS: " + visitor.getName() + " has joined the queue for " + this.getRideName() + ".");
-    }
-    @Override
-    public void removeVisitorFromQueue() {
-        if (waitingLine.isEmpty()) { System.out.println("FAILURE: The queue is empty."); return; }
-        Visitor removedVisitor = waitingLine.poll();
-        System.out.println("SUCCESS: " + removedVisitor.getName() + " has been removed from the queue.");
-    }
-    @Override
-    public void printQueue() {
-        System.out.println("\n--- Queue for '" + this.getRideName() + "' ---");
-        if (waitingLine.isEmpty()) { System.out.println("The queue is empty."); }
-        else { int pos = 1; for (Visitor v : waitingLine) { System.out.println(pos++ + ". " + v.getName()); } }
-        System.out.println("---------------------------\n");
-    }
-    @Override
-    public void addVisitorToHistory(Visitor visitor) {
-        rideHistory.add(visitor);
-        System.out.println("INFO: " + visitor.getName() + " was added to the ride history.");
-    }
+    @Override public void addVisitorToQueue(Visitor visitor) { /* ... */ }
+    @Override public void removeVisitorFromQueue() { /* ... */ }
+    @Override public void printQueue() { /* ... */ }
+    @Override public void addVisitorToHistory(Visitor visitor) { rideHistory.add(visitor); System.out.println("INFO: " + visitor.getName() + " was added to the ride history."); }
     @Override
     public boolean checkVisitorFromHistory(Visitor visitor) {
         return rideHistory.contains(visitor);
@@ -113,17 +111,6 @@ public class Ride implements RideInterface {
     public int numberOfVisitors() {
         return rideHistory.size();
     }
-    @Override
-    public void printRideHistory() {
-        System.out.println("\n--- Ride History for '" + this.getRideName() + "' ---");
-        if (rideHistory.isEmpty()) { System.out.println("The history is empty."); }
-        else {
-            Iterator<Visitor> iterator = rideHistory.iterator();
-            while (iterator.hasNext()) {
-                Visitor v = iterator.next();
-                System.out.println("- Name: " + v.getName() + ", Age: " + v.getAge());
-            }
-        }
-        System.out.println("----------------------------------\n");
-    }
+    @Override public void printRideHistory() { /* ... */ }
+    @Override public void runOneCycle() { /* ... */ }
 }

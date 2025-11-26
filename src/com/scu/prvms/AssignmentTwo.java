@@ -8,61 +8,61 @@ public class AssignmentTwo {
         // assignment.partThree();
         // assignment.partFourA();
         // assignment.partFourB();
+        // assignment.partFive();
 
-        // --- 调用partFive()来运行本次的演示 ---
-        assignment.partFive();
+        assignment.partSix();
+        assignment.partSeven();
     }
 
-    public void partThree() {
-        // Part 3 的演示代码... (为简洁省略)
+
+    public void partThree() { /* ... */ }
+    public void partFourA() { /* ... */ }
+    public void partFourB() { /* ... */ }
+    public void partFive() { /* ... */ }
+
+    // --- 在partSix()中编写演示代码 ---
+    public void partSix() {
+        System.out.println("--- Executing Part 6: Writing Ride History to a File ---");
+
+        Ride exportRide = new Ride("Data Exporter", "Utility Ride", 10);
+        System.out.println("\nAdding 5 visitors to the ride history...");
+        exportRide.addVisitorToHistory(new Visitor("Kevin", 41, "ID11", "T11", "Annual Pass"));
+        exportRide.addVisitorToHistory(new Visitor("Laura", 36, "ID12", "T12", "Day Pass"));
+        exportRide.addVisitorToHistory(new Visitor("Mike", 25, "ID13", "T13", "Day Pass"));
+        exportRide.addVisitorToHistory(new Visitor("Nancy", 52, "ID14", "T14", "VIP Pass"));
+        exportRide.addVisitorToHistory(new Visitor("Oscar", 22, "ID15", "T15", "Day Pass"));
+
+        System.out.println("\n--- Current Ride History (to be exported): ---");
+        exportRide.printRideHistory();
+
+        // 调用导出方法，将数据写入名为 "ride_history.csv" 的文件
+        exportRide.exportRideHistory("ride_history.csv");
+
+        System.out.println("\nPlease check your project's root directory for the 'ride_history.csv' file.");
+        System.out.println("\n--- Part 6 Demonstration Finished ---\n\n");
     }
 
-    public void partFourA() {
-        // Part 4A 的演示代码... (为简洁省略)
+    // --- 在partSeven()中编写演示代码 ---
+    public void partSeven() {
+        System.out.println("--- Executing Part 7: Reading Ride History from a File ---");
+
+        // 创建一个全新的 Ride 对象，以确保其历史记录是空的
+        Ride importRide = new Ride("Data Importer", "Utility Ride", 10);
+
+        // 打印导入前的状态
+        System.out.println("\n--- Ride History BEFORE import: ---");
+        importRide.printRideHistory(); // 此时应为空
+        System.out.println("Number of visitors in history before import: " + importRide.numberOfVisitors());
+
+
+        // 调用导入方法
+        importRide.importRideHistory("ride_history.csv");
+
+        // 打印导入后的状态，以验证数据是否已成功加载
+        System.out.println("\n--- Ride History AFTER import: ---");
+        importRide.printRideHistory(); // 此时应包含5名游客的信息
+        System.out.println("Number of visitors in history after import: " + importRide.numberOfVisitors());
+
+        System.out.println("\n--- Part 7 Demonstration Finished ---");
     }
-
-    public void partFourB() {
-        // Part 4B 的演示代码... (为简洁省略)
-    }
-
-    // --- Part 5：在partFive()中编写演示代码 ---
-    public void partFive() {
-        System.out.println("--- Executing Part 5: Run a Ride Cycle Demonstration ---");
-
-        // 1. 创建一个 Ride 对象，设置每轮最大载客量为 4
-        Ride hauntedMansion = new Ride("Haunted Mansion", "Dark Ride", 4);
-        System.out.println("Created a new ride: '" + hauntedMansion.getRideName() + "' with a capacity of 4 riders per cycle.");
-
-        // 2. 必须为游乐设施分配一个操作员
-        Employee operator = new Employee("Henry", 40, "E101", "EMP101", "Ride Operator");
-        hauntedMansion.assignOperator(operator);
-        System.out.println("Assigned operator '" + operator.getName() + "' to the ride.");
-
-        // 3. 添加超过一轮容量的游客到队列中 (例如，添加10名)
-        System.out.println("\nAdding 10 visitors to the queue...");
-        for (int i = 1; i <= 10; i++) {
-            hauntedMansion.addVisitorToQueue(new Visitor("Visitor" + i, 20 + i, "ID_V" + i, "T_V" + i, "Day Pass"));
-        }
-
-        // 4. 打印运行前的状态
-        System.out.println("\n--- STATUS BEFORE RUNNING CYCLE ---");
-        hauntedMansion.printQueue();
-        hauntedMansion.printRideHistory();
-
-        // 5. 运行一轮
-        hauntedMansion.runOneCycle();
-
-        // 6. 打印运行后的状态，以验证变化
-        System.out.println("\n--- STATUS AFTER RUNNING CYCLE ---");
-        System.out.println("Queue should now have 6 visitors (10 - 4).");
-        hauntedMansion.printQueue();
-        System.out.println("Ride history should now have 4 visitors.");
-        hauntedMansion.printRideHistory();
-
-        System.out.println("\n--- Part 5 Demonstration Finished ---");
-    }
-    // ---
-
-    public void partSix() {}
-    public void partSeven() {}
 }
